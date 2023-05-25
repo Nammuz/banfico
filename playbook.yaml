@@ -1,0 +1,25 @@
+- hosts: localhost
+  become: true
+  tags: vagup
+  tasks:
+    - name: Spin up vagrant instance
+      command: vagrant up
+      args:
+        chdir: "{{ ansible_env.PWD }}"
+
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Update host entry in localhost
+      lineinfile:
+        path: /etc/hosts
+        line: "192.168.0.91 my-google.com"
+
+
+- hosts: haservers
+  become: true
+  tasks:
+    - include_role:
+        name: haproxy
+    - include_role:
+        name: keepalived

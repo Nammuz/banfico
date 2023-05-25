@@ -1,0 +1,66 @@
+    - name: Install HAProxy
+      yum:
+        name: haproxy
+        state: present
+
+    - name: Copy HAProxy configuration file
+      template:
+        src: haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg
+
+    - name: Create directory
+      file:
+        path: /etc/haproxy/certs
+        state: directory
+
+    - name: Generate Private Key
+      openssl_privatekey:
+        path: /etc/haproxy/certs/server.key
+        size: 2048
+        state: present
+
+    - name: Generate Certificate Signing Request (CSR)
+      openssl_csr:
+        path: /etc/haproxy/certs/server.csr
+        privatekey_path: /etc/haproxy/certs/server.key
+        common_name: my-google.com
+        state: present
+
+    - name: Generate Self-Signed Certificate
+      openssl_certificate:
+        path: /etc/haproxy/certs/server.crt
+        privatekey_path: /etc/haproxy/certs/server.key
+        csr_path: /etc/haproxy/certs/server.csr
+        provider: selfsigned
+        state: present
+
+    - name: Combine certificate and private key into PEM file
+      slurp:
+        src: /etc/haproxy/certs/server.crt
+      register: certificate_contents
+
+    - name: Read private key file
+      slurp:
+        src: /etc/haproxy/certs/server.key
+      register: private_key_contents
+ 
+    - name: Combine certificate and private key into PEM file
+      set_fact:
+        pem_content: "{{ certificate_contents.content | b64decode }}\n{{ private_key_contents.content | b64decode }}"
+
+    - name: Write PEM content to file
+      copy:
+        content: "{{ pem_content }}"
+        dest: /etc/haproxy/certs/server.pem
+ 
+    - name: restart haproxy
+      service:
+        name: haproxy
+        state: restarted
+
+    - name: Enable and start HAProxy service
+      systemd:
+        name: haproxy
+        state: started
+        enabled: true
+

@@ -1,0 +1,36 @@
+- name: install keepalived
+  package:
+    name: keepalived
+    state: installed
+
+- name: configure nonlocalbind
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: '1'
+    state: present
+    reload: true
+    sysctl_file: /etc/sysctl.d/ip_nonlocal_bind.conf
+    
+- name: configure ipforwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: true
+    sysctl_file: /etc/sysctl.d/ip_forwarding_config.conf
+
+
+    
+
+- name: install keepalived configuration
+  template:
+    src: keepalived.conf
+    dest: /etc/keepalived/keepalived.conf
+  notify:
+    - restart keepalived
+
+- name: activate keepalived
+  service:
+    name: keepalived
+    state: started
+    enabled: true

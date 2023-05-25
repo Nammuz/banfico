@@ -1,0 +1,95 @@
+abi@veera-linux:~/banfico$ ansible-playbook -i inventory playbook.yaml  --skip-tags=vagup
+
+PLAY [localhost] **************************************************************************************************
+
+PLAY [localhost] **************************************************************************************************
+
+TASK [Gathering Facts] ********************************************************************************************
+ok: [localhost]
+
+TASK [Update host entry in localhost] *****************************************************************************
+changed: [localhost]
+
+PLAY [haservers] **************************************************************************************************
+
+TASK [Gathering Facts] ********************************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [include_role : haproxy] *************************************************************************************
+
+TASK [haproxy : Install HAProxy] **********************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : Copy HAProxy configuration file] ******************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : Create directory] *********************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : Generate Private Key] *****************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : Generate Certificate Signing Request (CSR)] *******************************************************
+ok: [haproxy2]
+ok: [haproxy1]
+
+TASK [haproxy : Generate Self-Signed Certificate] *****************************************************************
+ok: [haproxy2]
+ok: [haproxy1]
+
+TASK [haproxy : Combine certificate and private key into PEM file] ************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : Read private key file] ****************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : Combine certificate and private key into PEM file] ************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : Write PEM content to file] ************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [haproxy : restart haproxy] **********************************************************************************
+changed: [haproxy2]
+changed: [haproxy1]
+
+TASK [haproxy : Enable and start HAProxy service] *****************************************************************
+changed: [haproxy1]
+changed: [haproxy2]
+
+TASK [include_role : keepalived] **********************************************************************************
+
+TASK [keepalived : install keepalived] ****************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [keepalived : configure nonlocalbind] ************************************************************************
+ok: [haproxy2]
+ok: [haproxy1]
+
+TASK [keepalived : configure ipforwarding] ************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [keepalived : install keepalived configuration] **************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+TASK [keepalived : activate keepalived] ***************************************************************************
+ok: [haproxy1]
+ok: [haproxy2]
+
+PLAY RECAP ********************************************************************************************************
+haproxy1                   : ok=18   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+haproxy2                   : ok=18   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
